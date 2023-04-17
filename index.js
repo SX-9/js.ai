@@ -1,13 +1,22 @@
-const fs = require('fs');
-const { BayesClassifier } = require('natural');
+const fs = require("fs");
+const { prompt } = require("enquirer");
+const { BayesClassifier } = require("natural");
 const classifier = new BayesClassifier();
 
-fs.readdirSync('data').forEach(file => {
-  JSON.parse(fs.readFileSync('data/' + file, 'utf8')).forEach(sentence => {
-    classifier.addDocument(sentence, file.split('.')[0]);
-  });
-});
-
+fs.readdirSync("data").forEach((file) =>
+  JSON.parse(fs.readFileSync("data/" + file, "utf8")).forEach((sentence) =>
+    classifier.addDocument(sentence, file.split(".")[0])
+  )
+);
 classifier.train();
-console.log(classifier.classify('hi, nice to meet you!'));
-console.log(classifier.classify('ok, ill see you tomorrow!'))
+
+async function ask() {
+  let { input } = await prompt({
+    type: "input",
+    name: "input",
+    message: "Enter Input To Classify:",
+  });
+  console.log('Classified As:', classifier.classify(input));
+}
+
+ask();
