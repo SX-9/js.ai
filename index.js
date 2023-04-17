@@ -10,13 +10,41 @@ fs.readdirSync("data").forEach((file) =>
 );
 classifier.train();
 
-async function ask() {
+async function classify() {
   let { input } = await prompt({
     type: "input",
     name: "input",
-    message: "Enter Input To Classify:",
+    message: "enter input to classify:",
   });
-  console.log('Classified As:', classifier.classify(input));
+  let classifications = classifier.getClassifications(input);
+  if (classifications === [
+    'insult: 10.13%',
+    'apology: 9.81%',
+    'command: 9.81%',
+    'compliment: 9.81%',
+    'emotion: 9.81%',
+    'opinion: 9.81%',
+    'answer: 9.49%',
+    'greeting: 9.49%',
+    'goodbye: 9.18%',
+    'conversation: 8.54%',
+    'statement: 5.38%',
+    'question: 2.22%'
+  ]) {
+    console.log('classified as: unknown');
+    return;
+  }
+  console.log("classified as:", classifier.classify(input));
+  console.log(
+    classifications
+      .map((cat) => cat.label + ": " + (cat.value * 100).toFixed(2) + "%")
+  );
 }
 
-ask();
+async function start() {
+  while (true) {
+    await classify();
+  }
+}
+
+start();
